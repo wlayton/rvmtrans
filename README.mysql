@@ -1,0 +1,56 @@
+Loading instructions
+====================
+
+These two files contain the RVM subject headings in French and
+their equivalents in English from the LCSH. They are intended to
+be loaded into MySQL by following the steps below:
+
+1) Create the rvm database
+--------------------------
+
+On the Linux commandline, this can be done with the following command:
+    mysqladmin -h localhost -u root -p<root_password> create rvm
+
+    (where "<root_password>" is the password for the MySQL root user)
+
+
+2) Create the rvm user in MySQL
+-------------------------------
+
+On the Linux commandline, this can be done as follows:
+
+    mysql -h localhost -u root -p<root_password> -e
+        "GRANT CREATE,SELECT,INSERT,UPDATE,DELETE on rvm.* TO 'rvm'@'localhost' IDENTIFIED BY 'rvm' with GRANT OPTION"
+
+    mysql -h localhost -u root -p<root_password> -e "FLUSH PRIVILEGES"
+
+This will create the rvm user with a MySQL password of "rvm".
+
+
+3) Load data into rvm DB
+------------------------
+
+3a) Log in to MySQL as root
+
+    mysql -u root -p<root_password>
+
+    At MySQL prompt, type:
+        use rvm;
+
+    You are now using the rvm database. To make sure now tables exist, type:
+        show tables;
+
+3b) Create tables:
+
+    create table rvm.english (french INT, thesaurus TEXT, tag TEXT, heading TEXT CHARACTER SET utf8);
+
+    create table rvm.french (id INT NOT NULL, tag TEXT, heading TEXT CHARACTER SET utf8, PRIMARY KEY(id));
+
+
+3c) Load data into tables:
+
+Make sure you specify your own path to the data files in the commands below:
+
+    LOAD DATA INFILE 'rvm_eng_load_data.txt' INTO TABLE english CHARACTER SET utf8 FIELDS TERMINATED BY ';';
+
+    LOAD DATA INFILE 'rvm_fre_load_data.txt' INTO TABLE french CHARACTER SET utf8 FIELDS TERMINATED BY ';';
